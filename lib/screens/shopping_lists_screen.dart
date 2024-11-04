@@ -34,7 +34,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ShoppingListScreen(list_id: list[index].id!),
+                    builder: (context) => ShoppingListScreen(list_id: list[index].id!, title: list[index].title),
                   ),
                 );
                 setState(() {});

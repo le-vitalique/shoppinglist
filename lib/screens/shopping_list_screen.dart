@@ -4,9 +4,11 @@ import 'package:shoppinglist/model/shopping_list_item.dart';
 import 'package:shoppinglist/screens/add_list_item_screen.dart';
 
 class ShoppingListScreen extends StatefulWidget {
-  const ShoppingListScreen({super.key, required this.list_id});
+  const ShoppingListScreen(
+      {super.key, required this.list_id, required this.title});
 
   final int list_id;
+  final String title;
 
   @override
   State<ShoppingListScreen> createState() => _ShoppingListScreenState();
@@ -46,7 +48,8 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   Widget build(BuildContext context) {
     print('build ${widget.list_id}');
     return Scaffold(
-      appBar: AppBar(title: Text('Список покупок')),
+      appBar:
+          AppBar(title: Text(widget.title, overflow: TextOverflow.ellipsis)),
       body: FutureBuilder(
         future: DatabaseHelper.getListItems(widget.list_id),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
