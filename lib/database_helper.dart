@@ -7,12 +7,10 @@ class DatabaseHelper {
   static const int _version = 1;
   static const String _databaseName = 'shopping_list.db';
 
+  // get database object
   static Future<Database> _getDatabase() async {
-
-    // get database object
     var databasesPath = await getDatabasesPath();
     var path = p.join(databasesPath, _databaseName);
-    // await deleteDatabase(path);
     // Open the database, specifying a version and an onCreate callback
     return await openDatabase(path, version: _version,
         onCreate: (db, version) async {
@@ -42,7 +40,6 @@ class DatabaseHelper {
 
   // add list item
   static Future<int> addListItem(ShoppingListItem item) async {
-    print('adding ${item.toJson()}');
     final Database db = await _getDatabase();
     return await db.insert('items', item.toJson());
   }
@@ -57,27 +54,33 @@ class DatabaseHelper {
   }
 
   // get list items by list id
-  static Future<List<ShoppingListItem>> getListItems(int list_id) async {
+  static Future<List<ShoppingListItem>> getListItems(int listId) async {
     final Database db = await _getDatabase();
     var mapShoppingListItem =
-        await db.query('items', where: 'list_id = ?', whereArgs: [list_id]);
+        await db.query('items', where: 'list_id = ?', whereArgs: [listId]);
     List<ShoppingListItem> list = List<ShoppingListItem>.from(
         mapShoppingListItem.map((model) => ShoppingListItem.fromJson(model)));
     return list;
   }
 
   // delete list
-  static Future<int> deleteList(int list_id) async {
+  static Future<int> deleteList(int listId) async {
     final Database db = await _getDatabase();
     // delete list items
-    await db.delete('items', where: 'list_id = ?', whereArgs: [list_id]);
+    await db.delete('items', where: 'list_id = ?', whereArgs: [listId]);
     // delete list
-    return await db.delete('lists', where: 'id = ?', whereArgs: [list_id]);
+    return await db.delete('lists', where: 'id = ?', whereArgs: [listId]);
   }
 
   // delete list item
   static Future<int> deleteListItem(int id) async {
     final Database db = await _getDatabase();
     return await db.delete('items', where: 'id = ?', whereArgs: [id]);
+  }
+
+  static Future<int> setDoneItem(ShoppingListItem item) async {
+    final Database db = await _getDatabase();
+    return await db
+        .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
   }
 }

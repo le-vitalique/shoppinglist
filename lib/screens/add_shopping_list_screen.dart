@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoppinglist/database_helper.dart';
 import 'package:shoppinglist/model/shopping_list.dart';
+import 'package:shoppinglist/screens/shopping_list_screen.dart';
 
 class AddShoppingListScreen extends StatelessWidget {
   const AddShoppingListScreen({super.key});
@@ -11,9 +12,10 @@ class AddShoppingListScreen extends StatelessWidget {
     final descriptionController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Добавить список')),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(title: const Text('Создать список')),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: Column(
           children: [
             Padding(
@@ -60,11 +62,16 @@ class AddShoppingListScreen extends StatelessWidget {
                   }
                   final ShoppingList model =
                       ShoppingList(title: title, description: description);
-                  {
-                    await DatabaseHelper.addList(model);
-                  }
+
+                  int listId =  await DatabaseHelper.addList(model);
+
                   if (context.mounted) {
-                    Navigator.pop(context);
+                    await Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ShoppingListScreen(listId: listId, title: title),
+                      ),
+                    );
                   }
                 },
                 child: const Text('Добавить')),

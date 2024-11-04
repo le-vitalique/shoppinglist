@@ -3,9 +3,9 @@ import 'package:shoppinglist/database_helper.dart';
 import 'package:shoppinglist/model/shopping_list_item.dart';
 
 class AddListItemScreen extends StatelessWidget {
-  const AddListItemScreen({super.key, required this.list_id});
+  const AddListItemScreen({super.key, required this.listId});
 
-  final int list_id;
+  final int listId;
 
   @override
   Widget build(BuildContext context) {
@@ -13,9 +13,10 @@ class AddListItemScreen extends StatelessWidget {
     final descriptionController = TextEditingController();
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(title: const Text('Добавить элемент')),
       body: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: Column(
           children: [
             Padding(
@@ -61,7 +62,7 @@ class AddListItemScreen extends StatelessWidget {
                     return;
                   }
                   final ShoppingListItem model = ShoppingListItem(
-                      list_id: list_id, name: name, description: description);
+                      listId: listId, name: name, description: description);
                   {
                     await DatabaseHelper.addListItem(model);
                   }

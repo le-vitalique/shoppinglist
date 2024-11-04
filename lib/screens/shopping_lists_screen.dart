@@ -30,11 +30,11 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
           return Card(
             child: ListTile(
               onTap: () async {
-                print(list[index].id);
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ShoppingListScreen(list_id: list[index].id!, title: list[index].title),
+                    builder: (context) => ShoppingListScreen(
+                        listId: list[index].id!, title: list[index].title),
                   ),
                 );
                 setState(() {});
@@ -43,7 +43,10 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
                 child: Icon(Icons.shopping_cart),
               ),
               title: Text(list[index].title),
-              subtitle: Text(list[index].description),
+              subtitle: Text(
+                list[index].description,
+                style: TextStyle(fontStyle: FontStyle.italic),
+              ),
               trailing: IconButton(
                 icon: const Icon(Icons.delete_forever),
                 onPressed: () async {
@@ -65,7 +68,23 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: Text(widget.title),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddShoppingListScreen(),
+                  ),
+                );
+                setState(() {});
+              },
+              icon: const Icon(Icons.add))
+        ],
+      ),
       body: FutureBuilder(
         future: DatabaseHelper.getAllLists(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -81,19 +100,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddShoppingListScreen(),
-            ),
-          );
-          setState(() {});
-        },
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
