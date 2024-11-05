@@ -13,7 +13,12 @@ Widget emptyList() {
           size: 32,
         ),
       ),
-      Text('Тут пока пусто', style: TextStyle(fontWeight: FontWeight.bold),),
+      Text(
+        'Тут пока пусто',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     ],
   );
 }
