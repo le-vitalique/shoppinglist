@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoppinglist/database_helper.dart';
 import 'package:shoppinglist/enums.dart';
-import 'package:shoppinglist/model/shopping_list.dart';
+import 'package:shoppinglist/models/shopping_list.dart';
 import 'package:shoppinglist/screens/add_shopping_list_screen.dart';
 import 'package:shoppinglist/screens/shopping_list_screen.dart';
 

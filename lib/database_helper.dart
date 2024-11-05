@@ -1,7 +1,7 @@
 import 'package:path/path.dart' as p;
 import 'package:sqflite/sqflite.dart';
-import 'package:shoppinglist/model/shopping_list.dart';
-import 'package:shoppinglist/model/shopping_list_item.dart';
+import 'package:shoppinglist/models/shopping_list.dart';
+import 'package:shoppinglist/models/shopping_list_item.dart';
 
 class DatabaseHelper {
   static const int _version = 1;
@@ -105,11 +105,11 @@ class DatabaseHelper {
         .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
   }
 
-  static Future<int> getListItemCount(int listId) async {
-    final Database db = await _getDatabase();
-    final result =
-        await db.rawQuery('SELECT COUNT(*) FROM items WHERE list_id = $listId');
-    final count = Sqflite.firstIntValue(result);
-    return count!;
-  }
+  // static Future<int> getListItemCount(int listId) async {
+  //   final Database db = await _getDatabase();
+  //   final result =
+  //       await db.rawQuery('SELECT COUNT(*) FROM items WHERE list_id = $listId');
+  //   final count = Sqflite.firstIntValue(result);
+  //   return count!;
+  // }
 }
