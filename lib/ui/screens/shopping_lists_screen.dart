@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:shoppinglist/database_helper.dart';
+import 'package:shoppinglist/helpers/database_helper.dart';
 import 'package:shoppinglist/enums.dart';
 import 'package:shoppinglist/models/shopping_list.dart';
-import 'package:shoppinglist/screens/add_shopping_list_screen.dart';
-import 'package:shoppinglist/screens/shopping_list_screen.dart';
+import 'package:shoppinglist/ui/alert_dialog.dart';
+import 'package:shoppinglist/ui/popup_menu_items.dart';
+import 'package:shoppinglist/ui/screens/add_shopping_list_screen.dart';
+import 'package:shoppinglist/ui/screens/shopping_list_screen.dart';
+import 'package:shoppinglist/ui/widgets.dart';
 
 class ShoppingListsScreen extends StatefulWidget {
   const ShoppingListsScreen({super.key, required this.title});
@@ -15,9 +18,6 @@ class ShoppingListsScreen extends StatefulWidget {
 }
 
 class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
-
-
-
   Widget listListTile(ShoppingList list) {
     return ListTile(
       onTap: () async {
@@ -46,25 +46,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
           : null,
       trailing: PopupMenuButton(
         itemBuilder: (BuildContext context) {
-          return const [
-            PopupMenuItem(
-              value: Menu.edit,
-              child: ListTile(
-                leading: Icon(
-                  Icons.edit,
-                  color: Colors.green,
-                ),
-                title: Text('Изменить'),
-              ),
-            ),
-            PopupMenuItem(
-              value: Menu.delete,
-              child: ListTile(
-                leading: Icon(Icons.delete_forever, color: Colors.red),
-                title: Text('Удалить'),
-              ),
-            )
-          ];
+          return [editMenuItem, deleteMenuItem];
         },
         onSelected: (value) async {
           if (value == Menu.edit) {
@@ -74,11 +56,10 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
                 builder: (context) => AddShoppingListScreen(currentList: list),
               ),
             );
-            setState(() {});
           } else {
             await DatabaseHelper.deleteList(list.id!);
-            setState(() {});
           }
+          setState(() {});
         },
       ),
     );
@@ -97,55 +78,27 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text("Нет"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget confirmButton = TextButton(
-      child: const Text("Да"),
-      onPressed: () async {
-        await DatabaseHelper.deleteAllLists();
-        setState(() {});
-        if (context.mounted) {
-          Navigator.pop(context);
-        }
-      },
-    );
-    // set up the AlertDialog
-    Widget confirmDialog() {
-      return AlertDialog(
-        icon: const CircleAvatar(
-          backgroundColor: Colors.yellow,
-          child: Icon(Icons.question_mark),
-        ),
-        title: const Text("Удалить все списки"),
-        content: const Text('Вы действительно хотите удалить все списки?'),
-        actions: [
-          cancelButton,
-          confirmButton,
-        ],
-      );
-    }
-
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
           IconButton(
-              onPressed: () async {
-                // show the dialog
-                await showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return confirmDialog();
-                  },
-                );
-              },
-              icon: const Icon(Icons.delete_sweep))
+            onPressed: () async {
+              await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return ConfirmDialog(
+                    callback: () {
+                      setState(() {});
+                    },
+                    mode: Mode.list,
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.delete_sweep),
+          )
         ],
       ),
       body: Padding(
@@ -164,15 +117,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
                 if ((snapshot.data as List<ShoppingList>).isNotEmpty) {
                   return buildLists(snapshot.data);
                 } else {
-                  return const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.not_interested),
-                        Text('Тут пока пусто'),
-                      ],
-                    ),
-                  );
+                  return Center(child: emptyList());
                 }
             }
           },
@@ -189,7 +134,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
           );
           setState(() {});
         },
-        tooltip: 'Increment',
+        tooltip: 'Добавить список',
         child: const Icon(Icons.add),
       ),
     );

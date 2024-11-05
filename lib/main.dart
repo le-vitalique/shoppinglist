@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shoppinglist/screens/shopping_lists_screen.dart';
-import 'package:shoppinglist/theme.dart';
+import 'package:shoppinglist/ui/screens/shopping_lists_screen.dart';
+import 'package:shoppinglist/ui/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,4 +19,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

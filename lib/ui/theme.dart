@@ -20,5 +20,7 @@ final themeData = ThemeData(
 // tested with just a hot reload.
   colorScheme: ColorScheme.fromSeed(seedColor: themeColor),
   useMaterial3: true,
-  appBarTheme: AppBarTheme(centerTitle: true, color: ColorScheme.fromSeed(seedColor: themeColor).inversePrimary),
+  appBarTheme: AppBarTheme(
+      centerTitle: true,
+      color: ColorScheme.fromSeed(seedColor: themeColor).inversePrimary),
 );
