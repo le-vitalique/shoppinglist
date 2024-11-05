@@ -4,16 +4,24 @@ import 'package:shoppinglist/model/shopping_list.dart';
 import 'package:shoppinglist/screens/shopping_list_screen.dart';
 
 class AddShoppingListScreen extends StatelessWidget {
-  const AddShoppingListScreen({super.key});
+  final ShoppingList? currentList;
+
+  const AddShoppingListScreen({super.key, this.currentList});
 
   @override
   Widget build(BuildContext context) {
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
+    if (currentList != null) {
+      titleController.text = currentList!.title;
+      descriptionController.text = currentList!.description;
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: const Text('Создать список')),
+      appBar: AppBar(
+          title:
+              Text(currentList == null ? 'Создать список' : 'Изменить список')),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: Column(
@@ -55,27 +63,39 @@ class AddShoppingListScreen extends StatelessWidget {
             const Spacer(),
             ElevatedButton(
                 onPressed: () async {
-                  final title = titleController.value.text;
-                  final description = descriptionController.value.text;
+                  final String title = titleController.value.text;
+                  final String description = descriptionController.value.text;
                   if (title.isEmpty) {
                     return;
                   }
-                  final ShoppingList model =
-                      ShoppingList(title: title, description: description);
 
-                  int listId = await DatabaseHelper.addList(model);
+                  final ShoppingList model = ShoppingList(
+                      id: currentList?.id,
+                      title: title,
+                      description: description);
 
-                  if (context.mounted) {
-                    await Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            ShoppingListScreen(listId: listId, title: title),
-                      ),
-                    );
+                  if (currentList == null) {
+                    int listId = await DatabaseHelper.addList(model);
+
+                    if (context.mounted) {
+                      await Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ShoppingListScreen(
+                              listId: listId,
+                              title: title,
+                              description: description),
+                        ),
+                      );
+                    }
+                  } else {
+                    await DatabaseHelper.updateList(model);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
                   }
                 },
-                child: const Text('Добавить')),
+                child: Text(currentList == null ? 'Добавить' : 'Изменить')),
           ],
         ),
       ),

@@ -3,18 +3,26 @@ import 'package:shoppinglist/database_helper.dart';
 import 'package:shoppinglist/model/shopping_list_item.dart';
 
 class AddListItemScreen extends StatelessWidget {
-  const AddListItemScreen({super.key, required this.listId});
+  const AddListItemScreen({super.key, required this.listId, this.currentItem});
 
   final int listId;
+  final ShoppingListItem? currentItem;
 
   @override
   Widget build(BuildContext context) {
     final nameController = TextEditingController();
     final descriptionController = TextEditingController();
 
+    if (currentItem != null) {
+      nameController.text = currentItem!.name;
+      descriptionController.text = currentItem!.description;
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(title: const Text('Добавить элемент')),
+      appBar: AppBar(
+          title:
+              Text((currentItem == null) ? 'Добавить элемент' : 'Изменить элемент')),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8.0),
         child: Column(
@@ -62,15 +70,19 @@ class AddListItemScreen extends StatelessWidget {
                     return;
                   }
                   final ShoppingListItem model = ShoppingListItem(
-                      listId: listId, name: name, description: description);
-                  {
+                      id:currentItem?.id, listId: listId, name: name, description: description);
+
+                  if (currentItem == null) {
                     await DatabaseHelper.addListItem(model);
+                  } else {
+                    await DatabaseHelper.updateListItem(model);
                   }
+
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Добавить')),
+                child: Text((currentItem == null) ? 'Добавить' : 'Изменить')),
           ],
         ),
       ),

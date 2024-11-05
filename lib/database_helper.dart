@@ -32,16 +32,37 @@ class DatabaseHelper {
     return await db.delete('lists');
   }
 
+  // delete all list items
+  static Future<int> deleteAllListItems(int listId) async {
+    final Database db = await _getDatabase();
+    // delete all items
+    return await db.delete('items', where: 'list_id = ?', whereArgs: [listId]);
+  }
+
   // add list
   static Future<int> addList(ShoppingList list) async {
     final Database db = await _getDatabase();
     return await db.insert('lists', list.toJson());
   }
 
+  // update list
+  static Future<int> updateList(ShoppingList list) async {
+    final Database db = await _getDatabase();
+    return await db
+        .update('lists', list.toJson(), where: 'id = ?', whereArgs: [list.id]);
+  }
+
   // add list item
   static Future<int> addListItem(ShoppingListItem item) async {
     final Database db = await _getDatabase();
     return await db.insert('items', item.toJson());
+  }
+
+  // update list item
+  static Future<int> updateListItem(ShoppingListItem item) async {
+    final Database db = await _getDatabase();
+    return await db
+        .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
   }
 
   // get all lists
@@ -82,5 +103,13 @@ class DatabaseHelper {
     final Database db = await _getDatabase();
     return await db
         .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
+  }
+
+  static Future<int> getListItemCount(int listId) async {
+    final Database db = await _getDatabase();
+    final result =
+        await db.rawQuery('SELECT COUNT(*) FROM items WHERE list_id = $listId');
+    final count = Sqflite.firstIntValue(result);
+    return count!;
   }
 }

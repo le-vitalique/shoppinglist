@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shoppinglist/database_helper.dart';
+import 'package:shoppinglist/enums.dart';
 import 'package:shoppinglist/model/shopping_list.dart';
 import 'package:shoppinglist/screens/add_shopping_list_screen.dart';
 import 'package:shoppinglist/screens/shopping_list_screen.dart';
 
 class ShoppingListsScreen extends StatefulWidget {
   const ShoppingListsScreen({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -23,33 +15,76 @@ class ShoppingListsScreen extends StatefulWidget {
 }
 
 class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
+
+
+
   Widget listListTile(ShoppingList list) {
     return ListTile(
       onTap: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                ShoppingListScreen(listId: list.id!, title: list.title),
+            builder: (context) => ShoppingListScreen(
+                listId: list.id!,
+                title: list.title,
+                description: list.description),
           ),
         );
         setState(() {});
       },
-      leading: const CircleAvatar(
-        child: Icon(Icons.shopping_cart),
+      leading: Badge.count(
+        count: 1,
+        backgroundColor: Colors.pink,
+        // DatabaseHelper.getListItemCount(list.id!),
+        child: const CircleAvatar(
+          child: Icon(Icons.shopping_cart),
+
+        ),
       ),
       title: Text(list.title),
       subtitle: (list.description.isNotEmpty)
           ? Text(
               list.description,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontStyle: FontStyle.italic),
             )
           : null,
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_forever),
-        onPressed: () async {
-          await DatabaseHelper.deleteList(list.id!);
-          setState(() {});
+      trailing: PopupMenuButton(
+        itemBuilder: (BuildContext context) {
+          return const [
+            PopupMenuItem(
+              value: Menu.edit,
+              child: ListTile(
+                leading: Icon(
+                  Icons.edit,
+                  color: Colors.green,
+                ),
+                title: Text('Изменить'),
+              ),
+            ),
+            PopupMenuItem(
+              value: Menu.delete,
+              child: ListTile(
+                leading: Icon(Icons.delete_forever, color: Colors.red),
+                title: Text('Удалить'),
+              ),
+            )
+          ];
+        },
+        onSelected: (value) async {
+          if (value == Menu.edit) {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AddShoppingListScreen(currentList: list),
+              ),
+            );
+            setState(() {});
+          } else {
+            await DatabaseHelper.deleteList(list.id!);
+            setState(() {});
+          }
         },
       ),
     );
@@ -57,6 +92,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
 
   Widget buildLists(List<ShoppingList> list) => ListView.builder(
         shrinkWrap: true,
+        padding: const EdgeInsets.only(bottom: 100),
         itemCount: list.length,
         itemBuilder: (context, index) {
           return Card(
@@ -67,12 +103,39 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: const Text("Нет"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget confirmButton = TextButton(
+      child: const Text("Да"),
+      onPressed: () async {
+        await DatabaseHelper.deleteAllLists();
+        setState(() {});
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+    );
+    // set up the AlertDialog
+    Widget confirmDialog() {
+      return AlertDialog(
+        icon: const CircleAvatar(
+          backgroundColor: Colors.yellow,
+          child: Icon(Icons.question_mark),
+        ),
+        title: const Text("Удалить все списки"),
+        content: const Text('Вы действительно хотите удалить все списки?'),
+        actions: [
+          cancelButton,
+          confirmButton,
+        ],
+      );
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -80,39 +143,61 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
         actions: [
           IconButton(
               onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddShoppingListScreen(),
-                  ),
+                // show the dialog
+                await showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return confirmDialog();
+                  },
                 );
-                setState(() {});
               },
-              icon: const Icon(Icons.add))
+              icon: const Icon(Icons.delete_sweep))
         ],
       ),
-      body: FutureBuilder(
-        future: DatabaseHelper.getAllLists(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:
-              return const Text('none');
-            case ConnectionState.waiting:
-              return const Center(child: CircularProgressIndicator());
-            case ConnectionState.active:
-              return const Text('active');
-            case ConnectionState.done:
-              if ((snapshot.data as List<ShoppingList>).isNotEmpty) {
-                return buildLists(snapshot.data);
-              } else {
-                return const Center(
-                  child: Text('Тут пока пусто'),
-                );
-              }
-          }
-        },
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FutureBuilder(
+          future: DatabaseHelper.getAllLists(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:
+                return const Text('none');
+              case ConnectionState.waiting:
+                return const Center(child: CircularProgressIndicator());
+              case ConnectionState.active:
+                return const Text('active');
+              case ConnectionState.done:
+                if ((snapshot.data as List<ShoppingList>).isNotEmpty) {
+                  return buildLists(snapshot.data);
+                } else {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.not_interested),
+                        Text('Тут пока пусто'),
+                      ],
+                    ),
+                  );
+                }
+            }
+          },
+        ),
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: FloatingActionButton(
+        shape: const CircleBorder(),
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddShoppingListScreen(),
+            ),
+          );
+          setState(() {});
+        },
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
