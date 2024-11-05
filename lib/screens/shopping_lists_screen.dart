@@ -32,14 +32,8 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
         );
         setState(() {});
       },
-      leading: Badge.count(
-        count: 1,
-        backgroundColor: Colors.pink,
-        // DatabaseHelper.getListItemCount(list.id!),
-        child: const CircleAvatar(
-          child: Icon(Icons.shopping_cart),
-
-        ),
+      leading: const CircleAvatar(
+        child: Icon(Icons.shopping_cart),
       ),
       title: Text(list.title),
       subtitle: (list.description.isNotEmpty)
