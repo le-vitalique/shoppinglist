@@ -17,7 +17,10 @@ class ShoppingListScreen extends StatefulWidget {
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
   Widget doneButton(bool? done) {
     Icon doneIcon = (done ?? false)
-        ? const Icon(Icons.check_circle_outline)
+        ? const Icon(
+            Icons.check_circle_outline,
+            color: Colors.green,
+          )
         : const Icon(Icons.circle_outlined);
     return doneIcon;
   }
@@ -26,6 +29,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     print(item.done);
     return ListTile(
       onTap: () {},
+      onLongPress: () {},
       leading: IconButton(
         icon: doneButton(item.done),
         onPressed: () async {
@@ -42,13 +46,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       ),
       subtitle: (item.description.isNotEmpty)
           ? Text(
-        item.description,
-        style: (item.done == true)
-            ? const TextStyle(
-            fontStyle: FontStyle.italic,
-            decoration: TextDecoration.lineThrough)
-            : const TextStyle(fontStyle: FontStyle.italic),
-      )
+              item.description,
+              style: (item.done == true)
+                  ? const TextStyle(
+                      fontStyle: FontStyle.italic,
+                      decoration: TextDecoration.lineThrough)
+                  : const TextStyle(fontStyle: FontStyle.italic),
+            )
           : null,
       trailing: IconButton(
         icon: const Icon(Icons.delete_forever),
@@ -61,14 +65,14 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
   }
 
   Widget buildItems(List<ShoppingListItem> list) => ListView.builder(
-    shrinkWrap: true,
-    itemCount: list.length,
-    itemBuilder: (context, index) {
-      return Card(
-        child: itemListTile(list[index]),
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return Card(
+            child: itemListTile(list[index]),
+          );
+        },
       );
-    },
-  );
 
   @override
   Widget build(BuildContext context) {

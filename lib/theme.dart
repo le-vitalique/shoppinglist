@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const MaterialColor themeColor = Colors.blue;
+
 final themeData = ThemeData(
 // This is the theme of your application.
 //
@@ -16,7 +18,7 @@ final themeData = ThemeData(
 //
 // This works for code too, not just values: Most code changes can be
 // tested with just a hot reload.
-  colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+  colorScheme: ColorScheme.fromSeed(seedColor: themeColor),
   useMaterial3: true,
-  appBarTheme: AppBarTheme(centerTitle: true, color: ColorScheme.fromSeed(seedColor: Colors.deepPurple).inversePrimary),
+  appBarTheme: AppBarTheme(centerTitle: true, color: ColorScheme.fromSeed(seedColor: themeColor).inversePrimary),
 );
