@@ -105,11 +105,11 @@ class DatabaseHelper {
         .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
   }
 
-// static Future<int> getListItemCount(int listId) async {
-//   final Database db = await _getDatabase();
-//   final result =
-//       await db.rawQuery('SELECT COUNT(*) FROM items WHERE list_id = $listId');
-//   final count = Sqflite.firstIntValue(result);
-//   return count!;
-// }
+  static Future<int> getListItemCount(int listId) async {
+    final Database db = await _getDatabase();
+    final result =
+        await db.rawQuery('SELECT COUNT(*) FROM items WHERE list_id = $listId');
+    final count = Sqflite.firstIntValue(result);
+    return count!;
+  }
 }

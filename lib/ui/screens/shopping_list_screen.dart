@@ -92,23 +92,41 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
       appBar: AppBar(
         title: Text(widget.title, overflow: TextOverflow.ellipsis),
         actions: [
-          IconButton(
-            onPressed: () async {
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ConfirmDialog(
-                    listId: widget.listId,
-                    callback: () {
-                      setState(() {});
-                    },
-                    mode: Mode.item,
-                  );
-                },
-              );
+          FutureBuilder(
+            future: DatabaseHelper.getListItemCount(widget.listId),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return const Text('none');
+                case ConnectionState.waiting:
+                  return const Center(child: CircularProgressIndicator());
+                case ConnectionState.active:
+                  return const Text('active');
+                case ConnectionState.done:
+                  if ((snapshot.data) != 0) {
+                    return IconButton(
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ConfirmDialog(
+                              listId: widget.listId,
+                              callback: () {
+                                setState(() {});
+                              },
+                              mode: Mode.item,
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.delete_sweep),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+              }
             },
-            icon: const Icon(Icons.delete_sweep),
-          )
+          ),
         ],
       ),
       body: Column(

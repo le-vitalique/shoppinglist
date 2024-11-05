@@ -32,8 +32,26 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
         );
         setState(() {});
       },
-      leading: const CircleAvatar(
-        child: Icon(Icons.shopping_cart),
+      leading: FutureBuilder(
+        future: DatabaseHelper.getListItemCount(list.id!),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return const Text('none');
+            case ConnectionState.waiting:
+              return const Center(child: CircularProgressIndicator());
+            case ConnectionState.active:
+              return const Text('active');
+            case ConnectionState.done:
+              return Badge.count(
+                count: snapshot.data,
+                child: const CircleAvatar(
+                  backgroundColor: Colors.black12,
+                  child: Icon(Icons.shopping_cart),
+                ),
+              );
+          }
+        },
       ),
       title: Text(list.title),
       subtitle: (list.description.isNotEmpty)
@@ -83,22 +101,40 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
       appBar: AppBar(
         title: Text(widget.title),
         actions: [
-          IconButton(
-            onPressed: () async {
-              await showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ConfirmDialog(
-                    callback: () {
-                      setState(() {});
-                    },
-                    mode: Mode.list,
-                  );
-                },
-              );
+          FutureBuilder(
+            future: DatabaseHelper.getAllLists(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.none:
+                  return const Text('none');
+                case ConnectionState.waiting:
+                  return const Center(child: CircularProgressIndicator());
+                case ConnectionState.active:
+                  return const Text('active');
+                case ConnectionState.done:
+                  if ((snapshot.data as List<ShoppingList>).isNotEmpty) {
+                    return IconButton(
+                      onPressed: () async {
+                        await showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ConfirmDialog(
+                              callback: () {
+                                setState(() {});
+                              },
+                              mode: Mode.list,
+                            );
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.delete_sweep),
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+              }
             },
-            icon: const Icon(Icons.delete_sweep),
-          )
+          ),
         ],
       ),
       body: Padding(
