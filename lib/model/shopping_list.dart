@@ -9,7 +9,7 @@ class ShoppingList {
   String title;
   String description;
 
-  ShoppingList({this.id, required this.title, required this.description});
+  ShoppingList({this.id, required this.title, this.description = ''});
 
   factory ShoppingList.fromJson(Map<String, dynamic> json) => _$ShoppingListFromJson(json);
 

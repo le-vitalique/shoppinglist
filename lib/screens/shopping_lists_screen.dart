@@ -23,38 +23,44 @@ class ShoppingListsScreen extends StatefulWidget {
 }
 
 class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
+  Widget listListTile(ShoppingList list) {
+    return ListTile(
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ShoppingListScreen(listId: list.id!, title: list.title),
+          ),
+        );
+        setState(() {});
+      },
+      leading: const CircleAvatar(
+        child: Icon(Icons.shopping_cart),
+      ),
+      title: Text(list.title),
+      subtitle: (list.description.isNotEmpty)
+          ? Text(
+              list.description,
+              style: const TextStyle(fontStyle: FontStyle.italic),
+            )
+          : null,
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_forever),
+        onPressed: () async {
+          await DatabaseHelper.deleteList(list.id!);
+          setState(() {});
+        },
+      ),
+    );
+  }
+
   Widget buildLists(List<ShoppingList> list) => ListView.builder(
         shrinkWrap: true,
         itemCount: list.length,
         itemBuilder: (context, index) {
           return Card(
-            child: ListTile(
-              onTap: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ShoppingListScreen(
-                        listId: list[index].id!, title: list[index].title),
-                  ),
-                );
-                setState(() {});
-              },
-              leading: const CircleAvatar(
-                child: Icon(Icons.shopping_cart),
-              ),
-              title: Text(list[index].title),
-              subtitle: Text(
-                list[index].description,
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_forever),
-                onPressed: () async {
-                  await DatabaseHelper.deleteList(list[index].id!);
-                  setState(() {});
-                },
-              ),
-            ),
+            child: listListTile(list[index]),
           );
         },
       );
@@ -96,7 +102,13 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
             case ConnectionState.active:
               return const Text('active');
             case ConnectionState.done:
-              return buildLists(snapshot.data);
+              if ((snapshot.data as List<ShoppingList>).isNotEmpty) {
+                return buildLists(snapshot.data);
+              } else {
+                return const Center(
+                  child: Text('Тут пока пусто'),
+                );
+              }
           }
         },
       ),

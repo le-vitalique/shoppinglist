@@ -11,8 +11,10 @@ ShoppingListItem _$ShoppingListItemFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num?)?.toInt(),
       listId: (json['list_id'] as num).toInt(),
       name: json['name'] as String,
-      description: json['description'] as String,
-      done: ShoppingListItem._boolFromInt((json['done'] as num).toInt()),
+      description: json['description'] as String? ?? '',
+      done: json['done'] == null
+          ? false
+          : ShoppingListItem._boolFromInt((json['done'] as num).toInt()),
     );
 
 Map<String, dynamic> _$ShoppingListItemToJson(ShoppingListItem instance) {

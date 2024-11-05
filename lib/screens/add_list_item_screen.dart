@@ -58,7 +58,7 @@ class AddListItemScreen extends StatelessWidget {
                 onPressed: () async {
                   final name = nameController.value.text;
                   final description = descriptionController.value.text;
-                  if (name.isEmpty || description.isEmpty) {
+                  if (name.isEmpty) {
                     return;
                   }
                   final ShoppingListItem model = ShoppingListItem(

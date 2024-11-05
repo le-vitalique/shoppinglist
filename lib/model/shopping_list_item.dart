@@ -10,19 +10,19 @@ class ShoppingListItem {
   int listId;
   String name;
   String description;
-  @JsonKey(includeIfNull: false, fromJson: _boolFromInt, toJson: _boolToInt)
-  bool? done;
+  @JsonKey(fromJson: _boolFromInt, toJson: _boolToInt)
+  bool done;
 
   static bool _boolFromInt(int done) => done == 1;
 
-  static int _boolToInt(bool? done) => (done ?? false) ? 1 : 0;
+  static int _boolToInt(bool done) => (done) ? 1 : 0;
 
   ShoppingListItem(
       {this.id,
       required this.listId,
       required this.name,
-      required this.description,
-      this.done});
+      this.description = '',
+      this.done = false});
 
   factory ShoppingListItem.fromJson(Map<String, dynamic> json) =>
       _$ShoppingListItemFromJson(json);

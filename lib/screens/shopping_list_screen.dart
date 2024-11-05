@@ -22,44 +22,53 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
     return doneIcon;
   }
 
-  Widget buildLists(List<ShoppingListItem> list) => ListView.builder(
-        shrinkWrap: true,
-        itemCount: list.length,
-        itemBuilder: (context, index) {
-          return Card(
-            child: ListTile(
-              onTap: () {},
-              leading: IconButton(
-                icon: doneButton(list[index].done!),
-                onPressed: () async {
-                  list[index].done = !(list[index].done ?? false);
-                  await DatabaseHelper.setDoneItem(list[index]);
-                  setState(() {});
-                },
-              ),
-              title: Text(
-                list[index].name,
-                style: (list[index].done == true)
-                    ? const TextStyle(decoration: TextDecoration.lineThrough)
-                    : const TextStyle(),
-              ),
-              subtitle: Text(
-                list[index].description,
-                style: (list[index].done == true)
-                    ? const TextStyle(fontStyle: FontStyle.italic, decoration: TextDecoration.lineThrough)
-                    : const TextStyle(fontStyle: FontStyle.italic),
-              ),
-              trailing: IconButton(
-                icon: const Icon(Icons.delete_forever),
-                onPressed: () async {
-                  await DatabaseHelper.deleteListItem(list[index].id!);
-                  setState(() {});
-                },
-              ),
-            ),
-          );
+  Widget itemListTile(ShoppingListItem item) {
+    print(item.done);
+    return ListTile(
+      onTap: () {},
+      leading: IconButton(
+        icon: doneButton(item.done),
+        onPressed: () async {
+          item.done = !(item.done);
+          await DatabaseHelper.setDoneItem(item);
+          setState(() {});
         },
+      ),
+      title: Text(
+        item.name,
+        style: (item.done == true)
+            ? const TextStyle(decoration: TextDecoration.lineThrough)
+            : const TextStyle(),
+      ),
+      subtitle: (item.description.isNotEmpty)
+          ? Text(
+        item.description,
+        style: (item.done == true)
+            ? const TextStyle(
+            fontStyle: FontStyle.italic,
+            decoration: TextDecoration.lineThrough)
+            : const TextStyle(fontStyle: FontStyle.italic),
+      )
+          : null,
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_forever),
+        onPressed: () async {
+          await DatabaseHelper.deleteListItem(item.id!);
+          setState(() {});
+        },
+      ),
+    );
+  }
+
+  Widget buildItems(List<ShoppingListItem> list) => ListView.builder(
+    shrinkWrap: true,
+    itemCount: list.length,
+    itemBuilder: (context, index) {
+      return Card(
+        child: itemListTile(list[index]),
       );
+    },
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +103,13 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
               case ConnectionState.active:
                 return const Text('active');
               case ConnectionState.done:
-                return buildLists(snapshot.data);
+                if ((snapshot.data as List<ShoppingListItem>).isNotEmpty) {
+                  return buildItems(snapshot.data);
+                } else {
+                  return const Center(
+                    child: Text('Тут пока пусто'),
+                  );
+                }
             }
           },
         ),

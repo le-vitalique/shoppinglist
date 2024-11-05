@@ -57,19 +57,20 @@ class AddShoppingListScreen extends StatelessWidget {
                 onPressed: () async {
                   final title = titleController.value.text;
                   final description = descriptionController.value.text;
-                  if (title.isEmpty || description.isEmpty) {
+                  if (title.isEmpty) {
                     return;
                   }
                   final ShoppingList model =
                       ShoppingList(title: title, description: description);
 
-                  int listId =  await DatabaseHelper.addList(model);
+                  int listId = await DatabaseHelper.addList(model);
 
                   if (context.mounted) {
                     await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ShoppingListScreen(listId: listId, title: title),
+                        builder: (context) =>
+                            ShoppingListScreen(listId: listId, title: title),
                       ),
                     );
                   }

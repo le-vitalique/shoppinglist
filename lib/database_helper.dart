@@ -15,9 +15,9 @@ class DatabaseHelper {
     return await openDatabase(path, version: _version,
         onCreate: (db, version) async {
       await db.execute(
-          'CREATE TABLE lists (id INTEGER PRIMARY KEY, title TEXT, description TEXT)');
+          'CREATE TABLE lists (id INTEGER PRIMARY KEY, title TEXT, description TEXT DEFAULT \'\' NOT NULL)');
       await db.execute(
-          'CREATE TABLE items (id INTEGER PRIMARY KEY, list_id INTEGER, name TEXT, description TEXT, done BOOLEAN DEFAULT 0 NOT NULL, FOREIGN KEY(list_id) REFERENCES lists(id))');
+          'CREATE TABLE items (id INTEGER PRIMARY KEY, list_id INTEGER, name TEXT, description TEXT DEFAULT \'\' NOT NULL, done BOOLEAN DEFAULT 0 NOT NULL, FOREIGN KEY(list_id) REFERENCES lists(id))');
     }, onConfigure: (db) async {
       await db.execute("PRAGMA foreign_keys = ON");
     });
