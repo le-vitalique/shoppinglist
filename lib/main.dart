@@ -15,9 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: themeData,
-      home: const ShoppingListsScreen(
-        title: 'Список покупок',
-      ),
+      home: const ShoppingListsScreen(title: 'Список покупок'),
     );
   }
 }

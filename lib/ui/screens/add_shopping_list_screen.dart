@@ -7,10 +7,8 @@ import 'package:shoppinglist/ui/widgets.dart';
 
 class AddShoppingListScreen extends StatelessWidget {
   final ShoppingList? currentList;
-  final DatabaseHelper databaseHelper;
 
-  const AddShoppingListScreen(
-      {super.key, this.currentList, required this.databaseHelper});
+  const AddShoppingListScreen({super.key, this.currentList});
 
   @override
   Widget build(BuildContext context) {
@@ -54,23 +52,21 @@ class AddShoppingListScreen extends StatelessWidget {
                     description: description);
 
                 if (currentList == null) {
-                  int? listId = await databaseHelper.addList(model);
+                  int listId = await DatabaseHelper.addList(model);
 
                   if (context.mounted) {
                     await Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => ShoppingListScreen(
-                          listId: listId!,
-                          title: title,
-                          description: description,
-                          databaseHelper: databaseHelper,
-                        ),
+                            listId: listId,
+                            title: title,
+                            description: description),
                       ),
                     );
                   }
                 } else {
-                  await databaseHelper.updateList(model);
+                  await DatabaseHelper.updateList(model);
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
