@@ -117,11 +117,11 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
-                  return const Text('none');
+                  return const SizedBox.shrink();
                 case ConnectionState.waiting:
-                  return const Center(child: CircularProgressIndicator());
+                  return const CircularProgressIndicator();
                 case ConnectionState.active:
-                  return const Text('active');
+                  return const SizedBox.shrink();
                 case ConnectionState.done:
                   if ((snapshot.data as List<ShoppingList>).isNotEmpty) {
                     return IconButton(

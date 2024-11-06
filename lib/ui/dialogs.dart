@@ -52,9 +52,12 @@ class ConfirmDeleteAllDialog extends StatelessWidget {
   }
 }
 
-
 class ConfirmDeleteOneDialog extends StatelessWidget {
-  const ConfirmDeleteOneDialog({super.key, required this.id, required this.callback, required this.mode});
+  const ConfirmDeleteOneDialog(
+      {super.key,
+      required this.id,
+      required this.callback,
+      required this.mode});
 
   final int id;
   final Function callback;
@@ -89,8 +92,7 @@ class ConfirmDeleteOneDialog extends StatelessWidget {
         backgroundColor: Colors.yellow,
         child: Icon(Icons.question_mark),
       ),
-      title: Text(
-          (mode == Mode.list) ? 'Удалить список' : 'Удалить элемент?'),
+      title: Text((mode == Mode.list) ? 'Удалить список' : 'Удалить элемент?'),
       content: Text((mode == Mode.list)
           ? 'Вы действительно хотите удалить список?'
           : 'Вы действительно хотите удалить элемент?'),
