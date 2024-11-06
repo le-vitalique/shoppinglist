@@ -29,7 +29,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         icon: doneButton(item.done),
         onPressed: () async {
           item.done = !(item.done);
-          await DatabaseHelper.setDoneItem(item);
+          await DatabaseHelper.instance.setDoneItem(item);
           setState(() {});
         },
       ),
@@ -102,7 +102,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         title: Text(widget.title, overflow: TextOverflow.ellipsis),
         actions: [
           FutureBuilder(
-            future: DatabaseHelper.getListItemCount(widget.listId),
+            future: DatabaseHelper.instance.getListItemCount(widget.listId),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
@@ -163,7 +163,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: FutureBuilder(
-                future: DatabaseHelper.getListItems(widget.listId),
+                future: DatabaseHelper.instance.getListItems(widget.listId),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:

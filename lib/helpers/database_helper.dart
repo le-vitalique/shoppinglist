@@ -7,6 +7,16 @@ class DatabaseHelper {
   static const int _version = 1;
   static const String _databaseName = 'shopping_list.db';
 
+  DatabaseHelper._();
+
+  static final DatabaseHelper instance = DatabaseHelper._();
+
+  static Database? _database;
+
+  Future<Database> get database async {
+    return _database ??= await _getDatabase();
+  }
+
   // get database object
   static Future<Database> _getDatabase() async {
     var databasesPath = await getDatabasesPath();
@@ -24,8 +34,8 @@ class DatabaseHelper {
   }
 
   // delete all lists
-  static Future<int> deleteAllLists() async {
-    final Database db = await _getDatabase();
+  Future<int> deleteAllLists() async {
+    final Database db = await database;
     // delete all items
     await db.delete('items');
     // delete all lists
@@ -33,41 +43,40 @@ class DatabaseHelper {
   }
 
   // delete all list items
-  static Future<int> deleteAllListItems(int listId) async {
-    final Database db = await _getDatabase();
-    // delete all items
+  Future<int> deleteAllListItems(int listId) async {
+    final Database db = await database;
     return await db.delete('items', where: 'list_id = ?', whereArgs: [listId]);
   }
 
   // add list
-  static Future<int> addList(ShoppingList list) async {
-    final Database db = await _getDatabase();
+  Future<int> addList(ShoppingList list) async {
+    final Database db = await database;
     return await db.insert('lists', list.toJson());
   }
 
   // update list
-  static Future<int> updateList(ShoppingList list) async {
-    final Database db = await _getDatabase();
+  Future<int> updateList(ShoppingList list) async {
+    final Database db = await database;
     return await db
         .update('lists', list.toJson(), where: 'id = ?', whereArgs: [list.id]);
   }
 
   // add list item
-  static Future<int> addListItem(ShoppingListItem item) async {
-    final Database db = await _getDatabase();
+  Future<int> addListItem(ShoppingListItem item) async {
+    final Database db = await database;
     return await db.insert('items', item.toJson());
   }
 
   // update list item
-  static Future<int> updateListItem(ShoppingListItem item) async {
-    final Database db = await _getDatabase();
+  Future<int> updateListItem(ShoppingListItem item) async {
+    final Database db = await database;
     return await db
         .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
   }
 
   // get all lists
-  static Future<List<ShoppingList>> getAllLists() async {
-    final Database db = await _getDatabase();
+  Future<List<ShoppingList>> getAllLists() async {
+    final Database db = await database;
     var mapShoppingList = await db.query('lists');
     List<ShoppingList> list = List<ShoppingList>.from(
         mapShoppingList.map((model) => ShoppingList.fromJson(model)));
@@ -75,8 +84,8 @@ class DatabaseHelper {
   }
 
   // get list items by list id
-  static Future<List<ShoppingListItem>> getListItems(int listId) async {
-    final Database db = await _getDatabase();
+  Future<List<ShoppingListItem>> getListItems(int listId) async {
+    final Database db = await database;
     var mapShoppingListItem =
         await db.query('items', where: 'list_id = ?', whereArgs: [listId]);
     List<ShoppingListItem> list = List<ShoppingListItem>.from(
@@ -85,8 +94,8 @@ class DatabaseHelper {
   }
 
   // delete list
-  static Future<int> deleteList(int listId) async {
-    final Database db = await _getDatabase();
+  Future<int> deleteList(int listId) async {
+    final Database db = await database;
     // delete list items
     await db.delete('items', where: 'list_id = ?', whereArgs: [listId]);
     // delete list
@@ -94,19 +103,19 @@ class DatabaseHelper {
   }
 
   // delete list item
-  static Future<int> deleteListItem(int id) async {
-    final Database db = await _getDatabase();
+  Future<int> deleteListItem(int id) async {
+    final Database db = await database;
     return await db.delete('items', where: 'id = ?', whereArgs: [id]);
   }
 
-  static Future<int> setDoneItem(ShoppingListItem item) async {
-    final Database db = await _getDatabase();
+  Future<int> setDoneItem(ShoppingListItem item) async {
+    final Database db = await database;
     return await db
         .update('items', item.toJson(), where: 'id = ?', whereArgs: [item.id]);
   }
 
-  static Future<int> getListItemCount(int listId) async {
-    final Database db = await _getDatabase();
+  Future<int> getListItemCount(int listId) async {
+    final Database db = await database;
     final result =
         await db.rawQuery('SELECT COUNT(*) FROM items WHERE list_id = $listId');
     final count = Sqflite.firstIntValue(result);

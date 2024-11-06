@@ -33,7 +33,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
         setState(() {});
       },
       leading: FutureBuilder(
-        future: DatabaseHelper.getListItemCount(list.id!),
+        future: DatabaseHelper.instance.getListItemCount(list.id!),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -113,7 +113,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
         title: Text(widget.title),
         actions: [
           FutureBuilder(
-            future: DatabaseHelper.getAllLists(),
+            future: DatabaseHelper.instance.getAllLists(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
@@ -151,7 +151,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: FutureBuilder(
-          future: DatabaseHelper.getAllLists(),
+          future: DatabaseHelper.instance.getAllLists(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             switch (snapshot.connectionState) {
               case ConnectionState.none:
@@ -176,7 +176,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddShoppingListScreen(),
+              builder: (context) => AddShoppingListScreen(),
             ),
           );
           setState(() {});

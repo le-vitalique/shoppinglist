@@ -23,9 +23,9 @@ class ConfirmDeleteAllDialog extends StatelessWidget {
       child: const Text("Да"),
       onPressed: () async {
         if (mode == Mode.item) {
-          await DatabaseHelper.deleteAllListItems(listId!);
+          await DatabaseHelper.instance.deleteAllListItems(listId!);
         } else {
-          await DatabaseHelper.deleteAllLists();
+          await DatabaseHelper.instance.deleteAllLists();
         }
         if (context.mounted) {
           Navigator.pop(context);
@@ -76,9 +76,9 @@ class ConfirmDeleteOneDialog extends StatelessWidget {
       child: const Text("Да"),
       onPressed: () async {
         if (mode == Mode.item) {
-          await DatabaseHelper.deleteListItem(id);
+          await DatabaseHelper.instance.deleteListItem(id);
         } else {
-          await DatabaseHelper.deleteList(id);
+          await DatabaseHelper.instance.deleteList(id);
         }
         if (context.mounted) {
           Navigator.pop(context);

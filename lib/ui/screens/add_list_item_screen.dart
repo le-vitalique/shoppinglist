@@ -5,10 +5,11 @@ import 'package:shoppinglist/models/shopping_list_item.dart';
 import 'package:shoppinglist/ui/widgets.dart';
 
 class AddListItemScreen extends StatelessWidget {
-  const AddListItemScreen({super.key, required this.listId, this.currentItem});
+  AddListItemScreen({super.key, required this.listId, this.currentItem});
 
   final int listId;
   final ShoppingListItem? currentItem;
+  final _itemFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -31,38 +32,48 @@ class AddListItemScreen extends StatelessWidget {
         child: Wrap(
           alignment: WrapAlignment.center,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: nameFormField(nameController, Mode.item),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: descriptionFormField(descriptionController),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final name = nameController.value.text;
-                final description = descriptionController.value.text;
-                if (name.isEmpty) {
-                  return;
-                }
-                final ShoppingListItem model = ShoppingListItem(
-                    id: currentItem?.id,
-                    listId: listId,
-                    name: name,
-                    description: description);
+            Form(
+              key: _itemFormKey,
+              child: Wrap(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: nameFormField(
+                        controller: nameController, mode: Mode.item),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: descriptionFormField(descriptionController),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (_itemFormKey.currentState!.validate()) {
+                        final String name = nameController.value.text;
+                        final String description =
+                            descriptionController.value.text;
 
-                if (currentItem == null) {
-                  await DatabaseHelper.addListItem(model);
-                } else {
-                  await DatabaseHelper.updateListItem(model);
-                }
+                        final ShoppingListItem model = ShoppingListItem(
+                            id: currentItem?.id,
+                            listId: listId,
+                            name: name,
+                            description: description);
 
-                if (context.mounted) {
-                  Navigator.pop(context);
-                }
-              },
-              child: Text((currentItem == null) ? 'Добавить' : 'Изменить'),
+                        if (currentItem == null) {
+                          await DatabaseHelper.instance.addListItem(model);
+                        } else {
+                          await DatabaseHelper.instance.updateListItem(model);
+                        }
+
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                        }
+                      }
+                    },
+                    child:
+                        Text((currentItem == null) ? 'Добавить' : 'Изменить'),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

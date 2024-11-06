@@ -23,8 +23,13 @@ Widget emptyList() {
   );
 }
 
-Widget nameFormField(TextEditingController? controller, Mode mode) {
+Widget nameFormField({TextEditingController? controller, required mode}) {
   return TextFormField(
+    validator: (value) {
+      value ??= '';
+      return (value.isEmpty) ? 'Заполните поле' : null;
+    },
+    autovalidateMode: AutovalidateMode.onUserInteraction,
     controller: controller,
     maxLines: 1,
     decoration: InputDecoration(
@@ -46,7 +51,7 @@ Widget descriptionFormField(TextEditingController? controller) {
     controller: controller,
     decoration: const InputDecoration(
       hintText: 'Описание',
-      labelText: 'Введите описание',
+      labelText: 'Введите описание (опционально)',
       border: OutlineInputBorder(
         borderRadius: BorderRadius.all(
           Radius.circular(10.0),
