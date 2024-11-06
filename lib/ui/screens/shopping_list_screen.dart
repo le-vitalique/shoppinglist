@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shoppinglist/helpers/database_helper.dart';
 import 'package:shoppinglist/models/shopping_list_item.dart';
-import 'package:shoppinglist/ui/alert_dialog.dart';
+import 'package:shoppinglist/ui/dialogs.dart';
 import 'package:shoppinglist/ui/popup_menu_items.dart';
 import 'package:shoppinglist/ui/screens/add_list_item_screen.dart';
 import 'package:shoppinglist/enums.dart';
@@ -25,8 +25,6 @@ class ShoppingListScreen extends StatefulWidget {
 class _ShoppingListScreenState extends State<ShoppingListScreen> {
   Widget itemListTile(ShoppingListItem item) {
     return ListTile(
-      onTap: () {},
-      onLongPress: () {},
       leading: IconButton(
         icon: doneButton(item.done),
         onPressed: () async {
@@ -66,10 +64,21 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                     AddListItemScreen(listId: widget.listId, currentItem: item),
               ),
             );
+            setState(() {});
           } else {
-            await DatabaseHelper.deleteListItem(item.id!);
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ConfirmDeleteOneDialog(
+                  id: item.id!,
+                  callback: () {
+                    setState(() {});
+                  },
+                  mode: Mode.item,
+                );
+              },
+            );
           }
-          setState(() {});
         },
       ),
     );
@@ -109,7 +118,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return ConfirmDialog(
+                            return ConfirmDeleteAllDialog(
                               listId: widget.listId,
                               callback: () {
                                 setState(() {});

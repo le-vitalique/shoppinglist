@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shoppinglist/helpers/database_helper.dart';
 import 'package:shoppinglist/enums.dart';
 import 'package:shoppinglist/models/shopping_list.dart';
-import 'package:shoppinglist/ui/alert_dialog.dart';
+import 'package:shoppinglist/ui/dialogs.dart';
 import 'package:shoppinglist/ui/popup_menu_items.dart';
 import 'package:shoppinglist/ui/screens/add_shopping_list_screen.dart';
 import 'package:shoppinglist/ui/screens/shopping_list_screen.dart';
@@ -37,11 +37,11 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
-              return const Text('none');
+              return const SizedBox.shrink();
             case ConnectionState.waiting:
-              return const Center(child: CircularProgressIndicator());
+              return const CircularProgressIndicator();
             case ConnectionState.active:
-              return const Text('active');
+              return const SizedBox.shrink();
             case ConnectionState.done:
               return Badge.count(
                 count: snapshot.data,
@@ -74,10 +74,21 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
                 builder: (context) => AddShoppingListScreen(currentList: list),
               ),
             );
+            setState(() {});
           } else {
-            await DatabaseHelper.deleteList(list.id!);
+            await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return ConfirmDeleteOneDialog(
+                  id: list.id!,
+                  callback: () {
+                    setState(() {});
+                  },
+                  mode: Mode.list,
+                );
+              },
+            );
           }
-          setState(() {});
         },
       ),
     );
@@ -118,7 +129,7 @@ class _ShoppingListsScreenState extends State<ShoppingListsScreen> {
                         await showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return ConfirmDialog(
+                            return ConfirmDeleteAllDialog(
                               callback: () {
                                 setState(() {});
                               },
