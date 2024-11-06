@@ -5,10 +5,15 @@ import 'package:shoppinglist/models/shopping_list_item.dart';
 import 'package:shoppinglist/ui/widgets.dart';
 
 class AddListItemScreen extends StatelessWidget {
-  const AddListItemScreen({super.key, required this.listId, this.currentItem});
+  const AddListItemScreen(
+      {super.key,
+      required this.listId,
+      this.currentItem,
+      required this.databaseHelper});
 
   final int listId;
   final ShoppingListItem? currentItem;
+  final DatabaseHelper databaseHelper;
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +58,9 @@ class AddListItemScreen extends StatelessWidget {
                     description: description);
 
                 if (currentItem == null) {
-                  await DatabaseHelper.addListItem(model);
+                  await databaseHelper.addListItem(model);
                 } else {
-                  await DatabaseHelper.updateListItem(model);
+                  await databaseHelper.updateListItem(model);
                 }
 
                 if (context.mounted) {

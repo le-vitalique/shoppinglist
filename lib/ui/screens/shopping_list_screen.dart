@@ -12,11 +12,13 @@ class ShoppingListScreen extends StatefulWidget {
       {super.key,
       required this.listId,
       required this.title,
-      required this.description});
+      required this.description,
+      required this.databaseHelper});
 
   final int listId;
   final String title;
   final String description;
+  final DatabaseHelper databaseHelper;
 
   @override
   State<ShoppingListScreen> createState() => _ShoppingListScreenState();
@@ -29,7 +31,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         icon: doneButton(item.done),
         onPressed: () async {
           item.done = !(item.done);
-          await DatabaseHelper.setDoneItem(item);
+          await widget.databaseHelper.setDoneItem(item);
           setState(() {});
         },
       ),
@@ -60,8 +62,11 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    AddListItemScreen(listId: widget.listId, currentItem: item),
+                builder: (context) => AddListItemScreen(
+                  listId: widget.listId,
+                  currentItem: item,
+                  databaseHelper: widget.databaseHelper,
+                ),
               ),
             );
             setState(() {});
@@ -75,6 +80,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                     setState(() {});
                   },
                   mode: Mode.item,
+                  databaseHelper: widget.databaseHelper,
                 );
               },
             );
@@ -102,7 +108,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
         title: Text(widget.title, overflow: TextOverflow.ellipsis),
         actions: [
           FutureBuilder(
-            future: DatabaseHelper.getListItemCount(widget.listId),
+            future: widget.databaseHelper.getListItemCount(widget.listId),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               switch (snapshot.connectionState) {
                 case ConnectionState.none:
@@ -124,6 +130,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
                                 setState(() {});
                               },
                               mode: Mode.item,
+                              databaseHelper: widget.databaseHelper,
                             );
                           },
                         );
@@ -163,7 +170,7 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: FutureBuilder(
-                future: DatabaseHelper.getListItems(widget.listId),
+                future: widget.databaseHelper.getListItems(widget.listId),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
@@ -192,7 +199,10 @@ class _ShoppingListScreenState extends State<ShoppingListScreen> {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddListItemScreen(listId: widget.listId),
+              builder: (context) => AddListItemScreen(
+                listId: widget.listId,
+                databaseHelper: widget.databaseHelper,
+              ),
             ),
           );
           setState(() {});

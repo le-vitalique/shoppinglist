@@ -4,11 +4,16 @@ import 'package:shoppinglist/helpers/database_helper.dart';
 
 class ConfirmDeleteAllDialog extends StatelessWidget {
   const ConfirmDeleteAllDialog(
-      {super.key, this.listId, required this.callback, required this.mode});
+      {super.key,
+      this.listId,
+      required this.callback,
+      required this.mode,
+      required this.databaseHelper});
 
   final int? listId;
   final Function callback;
   final Mode mode;
+  final DatabaseHelper databaseHelper;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +28,9 @@ class ConfirmDeleteAllDialog extends StatelessWidget {
       child: const Text("Да"),
       onPressed: () async {
         if (mode == Mode.item) {
-          await DatabaseHelper.deleteAllListItems(listId!);
+          await databaseHelper.deleteAllListItems(listId!);
         } else {
-          await DatabaseHelper.deleteAllLists();
+          await databaseHelper.deleteAllLists();
         }
         if (context.mounted) {
           Navigator.pop(context);
@@ -57,11 +62,13 @@ class ConfirmDeleteOneDialog extends StatelessWidget {
       {super.key,
       required this.id,
       required this.callback,
-      required this.mode});
+      required this.mode,
+      required this.databaseHelper});
 
   final int id;
   final Function callback;
   final Mode mode;
+  final DatabaseHelper databaseHelper;
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +83,9 @@ class ConfirmDeleteOneDialog extends StatelessWidget {
       child: const Text("Да"),
       onPressed: () async {
         if (mode == Mode.item) {
-          await DatabaseHelper.deleteListItem(id);
+          await databaseHelper.deleteListItem(id);
         } else {
-          await DatabaseHelper.deleteList(id);
+          await databaseHelper.deleteList(id);
         }
         if (context.mounted) {
           Navigator.pop(context);
